@@ -15,9 +15,10 @@ COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm install --frozen-lockfile
 
 COPY --from=pruner /app/out/full/ .
-COPY apps/api/prisma ./apps/api/prisma
 
-RUN pnpm --filter api exec prisma generate
+#Run the database package to generate the client engines
+RUN pnpm --filter @repo/db db:generate
+
 RUN pnpm --filter api build
 RUN pnpm prune --prod --no-optional
 
@@ -30,6 +31,7 @@ RUN apk add --no-cache openssl
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=builder /app/packages/database/node_modules ./packages/database/node_modules
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
 

@@ -18,3 +18,5 @@ apps/*/.next
 apps/*/dist
 
 packages/*/node_modules
+
+.save
